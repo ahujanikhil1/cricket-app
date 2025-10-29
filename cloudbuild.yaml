@@ -1,3 +1,7 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+
 # cloudbuild.yaml
 substitutions:
   _SERVICE_NAME: "cricket-app"  # your Cloud Run service name
