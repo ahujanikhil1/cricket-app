@@ -10,7 +10,7 @@ HEADERS = {
     "x-rapidapi-key": API_KEY
 }
 
-# ---------- HOME ROUTE ----------
+# ---------- HOME ROUTE ---------
 @app.route("/")
 def home():
     """Redirect to live matches."""
