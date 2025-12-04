@@ -5,7 +5,6 @@ app = Flask(__name__)
 
 API_KEY = "0caf5e3ed5mshb1a24b93a3df156p102bf1jsn5637a03a1e51"
 BASE_URL = "https://cricbuzz-cricket.p.rapidapi.com"
-
 HEADERS = {
     "x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com",
     "x-rapidapi-key": API_KEY
