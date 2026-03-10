@@ -5,7 +5,7 @@ options:
 # cloudbuild.yaml
 substitutions:
   _SERVICE_NAME: "cricket-app"  # your Cloud Run service name
-  _REGION: "us-central1"        # your deployment region
+  _REGION: "asia-south1"        # your deployment region
 
 steps:
 # 1. Build the Docker image
