@@ -1,28 +1,41 @@
 from flask import Flask, render_template, redirect, url_for
 import requests
+import time
 
 app = Flask(__name__)
 
 API_KEY = "0caf5e3ed5mshb1a24b93a3df156p102bf1jsn5637a03a1e51"
 BASE_URL = "https://cricbuzz-cricket.p.rapidapi.com"
+
 HEADERS = {
     "x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com",
     "x-rapidapi-key": API_KEY
 }
 
-# ---------- HOME ROUTE ---------
+# cache variables
+cache_data = None
+cache_time = 0
+CACHE_DURATION = 30  # seconds
+
+
 @app.route("/")
 def home():
-    """Redirect to live matches."""
     return redirect(url_for('live_matches'))
 
 
-# ---------- LIVE MATCHES ----------
 @app.route("/live")
 def live_matches():
-    """Fetch and show all live cricket matches."""
+    global cache_data, cache_time
+
+    # check cache
+    if cache_data and (time.time() - cache_time) < CACHE_DURATION:
+        return render_template("live.html", matches=cache_data)
+
     url = f"{BASE_URL}/matches/v1/live"
     response = requests.get(url, headers=HEADERS)
+
+    if response.status_code == 429:
+        return "Rate limit exceeded. Please wait a few seconds.", 429
 
     if response.status_code != 200:
         return f"Error fetching live matches: {response.status_code}", 500
@@ -34,11 +47,11 @@ def live_matches():
         for series in match_type.get("seriesMatches", []):
             if "seriesAdWrapper" in series:
                 series_info = series["seriesAdWrapper"]["seriesName"]
+
                 for m in series["seriesAdWrapper"].get("matches", []):
                     info = m.get("matchInfo", {})
                     score = m.get("matchScore", {})
 
-                    # Extract scores safely
                     t1s = score.get("team1Score", {}).get("inngs1", {})
                     t2s = score.get("team2Score", {}).get("inngs1", {})
 
@@ -61,9 +74,12 @@ def live_matches():
                         "state": info.get("stateTitle", "")
                     })
 
+    # update cache
+    cache_data = live_matches
+    cache_time = time.time()
+
     return render_template("live.html", matches=live_matches)
 
 
-# ---------- START SERVER ----------
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=8080)
