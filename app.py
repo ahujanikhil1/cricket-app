@@ -15,7 +15,7 @@ HEADERS = {
 # cache variables
 cache_data = None
 cache_time = 0
-CACHE_DURATION = 30  # seconds
+CACHE_DURATION = 120  # seconds
 
 
 @app.route("/")
